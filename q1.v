@@ -1,55 +1,38 @@
-module q1(A,L,M,Sum,Carry);
-input [3:0]A;
-reg V;
-output Sum,Carry,L,M;
-wire w1;
-wire [1:0]w2;
-pe m1(A,w1,w2);
-HA m2(V,w1,L,Carry);
-HA m3(w2[0],w2[1],Sum,M);
+module q1(A,B,C,D,clk,D0,D1);
+  input A,B,C,D,clk;
+  output  D0,D1;
+  wire w1,w2;
+  d_ff sm1(D,clk,w1);
+  m_3 sm2(A,B,C,w2);
+  m_1 sm3(w1,w2,D0,D1);
 endmodule
 
-module pe(D,Y,V);
-input [3:0]D;
-output reg[1:0]Y;
-output reg V;
-always @(*)
-begin
-casex(D)
- 4'b0001:
-  begin 
-   Y=2'b00;
-	V=1;
-  end 
-  4'b001x:
-  begin 
-   Y=2'b01;
-	V=1;
+
+module d_ff(D,clk,Q);
+  input D,clk;
+  output reg Q;
+  always @(posedge clk)
+  begin
+    Q<=D;
   end
- 4'b01xx:
-  begin 
-   Y=2'b10;
-	V=1;
-  end  
-  4'b1xxx:
-  begin 
-   Y=2'b11;
-	V=1;
-  end 
-  default :
-   begin 
-	Y=2'bx;
-	V=0;
-	end
-endcase
-	
-end
+endmodule 
+module m_3(A,B,C,Y);
+  input A,B,C;
+  output Y;
+  assign Y = ~((A&B)|(~C));
 endmodule
 
-module HA(a,b,s,c);
-input a,b;
-output s,c;
-assign s=a^b;
-assign c=a&b;
-endmodule 
+module m_1(I,S,Y0,Y1);
+  input I,S;
+  output reg Y0,Y1;
+  always @(*)
+  begin
+    if(S==0)
+      Y0=I;
+    else
+      Y1=I;
+ end
    
+  endmodule
+  
+  
